@@ -50,6 +50,22 @@ export default function Register() {
       setSuccess("");
       setErrors({ submit: error.message });
     } else {
+      // Trigger SMS notification
+      try {
+        await fetch("/api/send-sms", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            phone: form.mobile,
+            courseName: form.course,
+          }),
+        });
+      } catch (smsError) {
+        console.error("Failed to trigger SMS:", smsError);
+      }
+
       setSuccess("✅ Registration successful!");
       setForm({ fullName: "", email: "", mobile: "", city: "", course: "", whatsapp: "" });
     }
