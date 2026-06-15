@@ -7,7 +7,8 @@ CREATE TABLE public.students (
     email TEXT NOT NULL,
     mobile_number TEXT NOT NULL,
     city TEXT,
-    course_interested TEXT NOT NULL,
+    course_code TEXT NOT NULL,
+    course_name TEXT NOT NULL,
     whatsapp_number TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

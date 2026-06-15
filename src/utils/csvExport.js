@@ -5,7 +5,8 @@ export function exportToCsv(data, filename = "students.csv") {
     "Mobile",
     "WhatsApp",
     "City",
-    "Course",
+    "Course Code",
+    "Course Name",
     "Created At"
   ];
 
@@ -15,7 +16,8 @@ export function exportToCsv(data, filename = "students.csv") {
     row.mobile_number,
     row.whatsapp_number || "",
     row.city || "",
-    row.course_interested,
+    row.course_code,
+    row.course_name,
     row.created_at
   ]);
 

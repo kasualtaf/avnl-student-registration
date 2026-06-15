@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { exportToCsv } from "../utils/csvExport";
+import { courses } from "../data/courses";
 
 export default function AdminDashboard() {
   const [students, setStudents] = useState([]);
@@ -8,11 +9,11 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({ total: 0, today: 0, month: 0 });
 
   const fetchStudents = async (filters = {}) => {
-    let query = supabase.from("students").select("id, full_name, email, mobile_number, city, whatsapp_number, course_interested, created_at");
+    let query = supabase.from("students").select("id, full_name, email, mobile_number, city, whatsapp_number, course_code, course_name, created_at");
     if (filters.name) query = query.ilike("full_name", `%${filters.name}%`);
     if (filters.email) query = query.ilike("email", `%${filters.email}%`);
     if (filters.mobile) query = query.ilike("mobile_number", `%${filters.mobile}%`);
-    if (filters.course) query = query.eq("course_interested", filters.course);
+    if (filters.course) query = query.eq("course_code", filters.course);
     const { data, error } = await query.order("created_at", { ascending: false });
     if (!error) setStudents(data);
   };
@@ -78,10 +79,9 @@ export default function AdminDashboard() {
         <input type="text" placeholder="Search by mobile" className="border rounded px-3 py-2" value={search.mobile} onChange={e => setSearch({ ...search, mobile: e.target.value })} />
         <select className="border rounded px-3 py-2" value={search.course} onChange={e => setSearch({ ...search, course: e.target.value })}>
           <option value="">All Courses</option>
-          <option value="Computer Science">Computer Science</option>
-          <option value="Business Administration">Business Administration</option>
-          <option value="Graphic Design">Graphic Design</option>
-          <option value="Data Analytics">Data Analytics</option>
+          {courses.map(c => (
+            <option key={c.code} value={c.code}>{c.name}</option>
+          ))}
         </select>
         <button className="bg-primary text-white py-2 rounded hover:bg-primary/90 transition col-span-5 md:col-span-1">Search</button>
       </form>
@@ -93,7 +93,8 @@ export default function AdminDashboard() {
               <th className="p-2 text-left">Name</th>
               <th className="p-2 text-left">Email</th>
               <th className="p-2 text-left">Mobile</th>
-              <th className="p-2 text-left">Course</th>
+              <th className="p-2 text-left">Course Code</th>
+              <th className="p-2 text-left">Course Name</th>
               <th className="p-2 text-left">Registered At</th>
               <th className="p-2 text-left">Actions</th>
             </tr>
@@ -104,7 +105,8 @@ export default function AdminDashboard() {
                 <td className="p-2">{s.full_name}</td>
                 <td className="p-2">{s.email}</td>
                 <td className="p-2">{s.mobile_number}</td>
-                <td className="p-2">{s.course_interested}</td>
+                <td className="p-2">{s.course_code}</td>
+                <td className="p-2">{s.course_name}</td>
                 <td className="p-2">{new Date(s.created_at).toLocaleString()}</td>
                 <td className="p-2">
                   <button onClick={() => handleDelete(s.id)} className="text-red-600 hover:underline">Delete</button>
