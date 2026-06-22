@@ -1,5 +1,4 @@
 // api/send-sms.js
-const twilio = require("twilio");
 
 export default async function handler(req, res) {
   // Only allow POST requests
@@ -7,29 +6,41 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { phone, courseName } = req.body;
+  const { phone } = req.body;
 
-  if (!phone || !courseName) {
-    return res.status(400).json({ error: "Phone number and course name are required" });
+  if (!phone) {
+    return res.status(400).json({ error: "Phone number is required" });
   }
 
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+  const apiKey = process.env.FAST2SMS_API_KEY;
 
-  if (!accountSid || !authToken || !twilioPhoneNumber) {
-    return res.status(500).json({ error: "Twilio credentials are not configured" });
+  if (!apiKey) {
+    return res.status(500).json({ error: "Fast2SMS API key is not configured" });
   }
 
   try {
-    const client = twilio(accountSid, authToken);
-    const message = await client.messages.create({
-      body: `Hello, you registered in the course ${courseName}. Thank you for choosing AVNL!`,
-      from: twilioPhoneNumber,
-      to: phone,
+    const response = await fetch("https://www.fast2sms.com/dev/bulkV2", {
+      method: "POST",
+      headers: {
+        "authorization": apiKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        route: "q",
+        message: "Thank you for registering with AVNL. Your registration has been received successfully.",
+        language: "english",
+        flash: 0,
+        numbers: phone
+      })
     });
 
-    return res.status(200).json({ success: true, messageId: message.sid });
+    const data = await response.json();
+
+    if (!response.ok || !data.return) {
+      throw new Error(data.message || "Failed to send SMS via Fast2SMS");
+    }
+
+    return res.status(200).json({ success: true, messageId: data.request_id });
   } catch (error) {
     console.error("Error sending SMS:", error);
     return res.status(500).json({ error: "Failed to send SMS", details: error.message });

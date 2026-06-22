@@ -10,7 +10,12 @@ CREATE TABLE public.students (
     course_code TEXT NOT NULL,
     course_name TEXT NOT NULL,
     whatsapp_number TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    status TEXT DEFAULT 'Pending',
+    source TEXT DEFAULT 'Website',
+    remarks TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    CONSTRAINT unique_email_mobile UNIQUE (email, mobile_number)
 );
 
 -- Enable Row Level Security (RLS)
