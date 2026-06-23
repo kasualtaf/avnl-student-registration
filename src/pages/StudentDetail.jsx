@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 
 export default function StudentDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [student, setStudent] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({});
@@ -27,12 +26,12 @@ export default function StudentDetail() {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    // updated_at is auto-bumped by the database trigger; no need to set it here.
     const { error } = await supabase.from("students").update({
       status: form.status,
-      remarks: form.remarks,
-      updated_at: new Date().toISOString()
+      remarks: form.remarks
     }).eq("id", id);
-    
+
     if (!error) {
       setIsEditing(false);
       fetchStudent();
@@ -47,12 +46,14 @@ export default function StudentDetail() {
     <section className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto">
         <Link to="/admin" className="text-primary hover:underline mb-6 inline-block font-medium">&larr; Back to Dashboard</Link>
-        
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="border-b border-gray-100 p-6 flex justify-between items-center bg-gray-50">
             <div>
               <h1 className="text-2xl font-bold text-gray-800">{student.full_name}</h1>
-              <p className="text-gray-500 font-mono text-sm mt-1">ID: {student.id}</p>
+              <p className="text-gray-500 font-mono text-sm mt-1">
+                Registration ID: {student.registration_id || student.id}
+              </p>
             </div>
             <button 
               onClick={() => setIsEditing(!isEditing)} 

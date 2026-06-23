@@ -192,6 +192,7 @@ export default function AdminDashboard() {
             <table className="min-w-full table-auto">
               <thead className="bg-gray-50 text-gray-700">
                 <tr>
+                  <th className="p-4 text-left font-medium">Reg. ID</th>
                   <th className="p-4 text-left font-medium">Name</th>
                   <th className="p-4 text-left font-medium">Email</th>
                   <th className="p-4 text-left font-medium">Course</th>
@@ -203,6 +204,9 @@ export default function AdminDashboard() {
               <tbody className="divide-y divide-gray-100">
                 {students.map(s => (
                   <tr key={s.id} className="hover:bg-gray-50 transition">
+                    <td className="p-4 font-mono text-xs text-gray-700">
+                      {s.registration_id || s.id.slice(0, 8)}
+                    </td>
                     <td className="p-4">{s.full_name}</td>
                     <td className="p-4">{s.email}</td>
                     <td className="p-4">{s.course_code}</td>
@@ -224,7 +228,7 @@ export default function AdminDashboard() {
                 ))}
                 {students.length === 0 && (
                   <tr>
-                    <td colSpan="6" className="p-8 text-center text-gray-500">No students found matching the criteria.</td>
+                    <td colSpan="7" className="p-8 text-center text-gray-500">No students found matching the criteria.</td>
                   </tr>
                 )}
               </tbody>

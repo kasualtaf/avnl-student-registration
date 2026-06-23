@@ -1,6 +1,5 @@
 // App.jsx – route definitions and layout
 import { Routes, Route, Navigate } from "react-router-dom";
-import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import StudentDetail from "./pages/StudentDetail.jsx";
@@ -14,7 +13,8 @@ export default function App() {
       <Navbar />
       <main className="flex-grow">
         <Routes>
-          <Route path="/" element={<Register />} />
+          {/* Public landing is admin sign-in. There is no public registration page. */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route
             path="/admin"
@@ -32,7 +32,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </main>
       <Footer />
